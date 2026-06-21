@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login | David Osama</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  body { background: radial-gradient(circle at 80% 10%, var(--light-blue) 0%, #fff 55%); min-height:100vh; display:flex; align-items:center; justify-content:center; }
+  .login-card { background:#fff; border:1px solid var(--glass-border); border-radius:var(--radius-lg); box-shadow:var(--shadow-lg); padding:3rem; width:100%; max-width:420px; }
+  .login-card h1 { font-size:1.6rem; margin-bottom:0.4rem; }
+  .login-card p { color:var(--text-muted); font-size:0.9rem; margin-bottom:2rem; }
+  .login-error { background:#FDE8E8; color:#E02424; padding:0.8rem 1rem; border-radius:var(--radius-sm); font-size:0.85rem; margin-bottom:1rem; display:none; }
+  .login-btn { width:100%; margin-top:0.5rem; }
+</style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>Admin Login</h1>
+    <p>Sign in to manage your portfolio website content.</p>
+    <div class="login-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" class="form-control" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary login-btn" id="loginBtn">Sign In</button>
+    </form>
+  </div>
+
+  <script src="js/supabase-client.js"></script>
+  <script>
+    // If already logged in, go straight to dashboard
+    supabaseClient.auth.getSession().then(({ data }) => {
+      if (data.session) window.location.href = 'admin.html';
+    });
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errBox = document.getElementById('loginError');
+      errBox.style.display = 'none';
+      btn.textContent = 'Signing in...';
+      btn.disabled = true;
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        errBox.textContent = error.message;
+        errBox.style.display = 'block';
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+        return;
+      }
+      window.location.href = 'admin.html';
+    });
+  </script>
+</body>
+</html>
